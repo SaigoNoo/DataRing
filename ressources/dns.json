@@ -1,0 +1,14 @@
+{
+  "EPHEC": {
+    "enable": true,
+    "dns": "www.ephec.be"
+  },
+  "PLEX - Bad DNS": {
+    "enable": true,
+    "dns": "myplexs.doussis.be"
+  },
+  "PLEX - Good DNS": {
+    "enable": true,
+    "dns": "myplex.doussis.be"
+  }
+}
