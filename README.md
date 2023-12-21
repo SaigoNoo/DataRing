@@ -1,40 +1,49 @@
-# Cahier des charges pour la création de DataRing
-## Présentation du client :
-Le client du projet est *Madame X*, développeur principalement dans le domaine du web (cloud, backend, fronted, ...).
-Le client semble très a l'aise avec le domaine de développement étant donnée sa longue experience dans le domaine (plus de **10 ans**).
-Sa faculté d'élocution, et les termes technique laisse penser que ce client sait de quoi l'on parle et sait exactement ce dont elle aura besoin. 
+# Rédaction du cahier des charges
+Par *[Doussis Giorgios](https://github.com/SaigoNoo)*
 
-## Présentation du projet :
-Le projet consiste à réaliser un logiciel de monitoring qui permettra de suivre le fonctionnement des plusieurs services (web, bases de données, etc...) depuis un, et un seul endroit.
-A l'aide de méthodes, qui seront décrites au point **Demandes fonctionnelles**, on pourra choisir quelle méthode sera appliqué pour tester la disponibilité d'un service. Plusieurs noms
-de projets sont pensés, mais DataRing (**Data** ~~*Monito*~~**ring**).
+## Présentation Client
+Ce sont les responsables IT de l'EPHEC. Ils sont spécialisés en Administration des systèmes et réseaux.
+Ce sont des personnes surchargés par leur travail en ce moment, d'où la raison de cette déléguation de commande.
 
-## Objectif du client :
-Comme expliqué ci-dessus, le client souhaite monitorer differents services comme un serveur web, une base de donnée, ou tout services répondant via une requete internet.
-Bien qu'il s'agisse d'une fonctionnalités, le client demande à ce que ce projet soit réalisé en Python car il s'agit d'un des seuls environnements dont
-sa machine dispose et probablement pour mettre a jour le logiciel par elle-même si une nouvelle technologie venait a devoir
-être implémantée dans l'utilitaire.
+## Description du Projet
+Il s'agit de créer une platefore de monitoring pour pinger des noms de domaines comme google.be, ephec.be, ...
+Il est demandé de réaliser l'utilitaire en **Python** est en **ligne de commande (CLI)**.
+La configuration doit être simple et modifiable a chaud (fichier JSON contenant les domaines)
 
-## Cible / Utilisateur :
-La destination finale de ce projet est le client lui-même (client à particulier), et donc ce n'est pas **directement à destination d'une entreprise**.
-*Madame X* semble possèder les ressources nécessaires au déploiement de cet utilitaire.
+## Objectif
+Avoir un suivi en temps réel de l'état des services, d'un simple coup d'oeil. L'objectif est de pouvoir permettre aux responsables de l'IT d'interagir
+en conséquence lors d'une éventuelle panne système et de pouvoir éventuellement prévenir leurs utilisateurs sur l'indisponibilité de services.
 
-## Demandes fonctionnelles :
-- [ ] Logiciel crée en Python
-- [ ] Utilisation en CLI (commande line interface)
-- [ ] Éventuellement implémenter un système de notification en cas de panne
-- [ ] Un descriptif de panne
+## Besoins fonctionnels
 
-## Contraintes :
-- [ ] Une éventuelle interface GUI (desktop ou web), dans le cas où un grand nombre de services a monitorer doivent être listés.
-- [ ] Certains services pourraient ne pas avoir de méthodes pour répondre à un test. Mais dans ce cas, un ping devrait suffire.
-- [ ] Savoir si cet utilitaire sera utilisé en tant que service serveur (tournera en permanence en arrière-plan) ou juste comme logiciel qu'on appelera depuis n'importe quelle machine cliente.
+### Visuel
 
-## Enveloppe budgétaire :
-```text
-A discuter, le client n'en a pas parlé
-```
-## Planification :
-| **Semaine** | **Date** | **Description** |
-|-------------|----------|-----------------|
-|             |          |                 |
+Rendre l'outil un minimum lisible et agréable a lire. Il serait désagréable de consulter plus de 100 domaines si tout est mal structuré et en blanc.
+
+### Des fréquences d'actualisation correctes
+
+Scanner les noms de domaines a une fréquence de sorte à ne pas surcharger l'écran et a filtrer les fqdn (dns) par status (connectés / déconnectés)
+
+## Contraintes Techniques / Légales
+
+Certains services peuvent mal réagir si un nombre de pings sont trop récurents sur un temps donné.
+Il faut donc configurer les pings en fonctions des règles du service. 
+
+## Méthodologie et Planning
+Le projet devra être développé dans un délai inférieur à 30 jours, avec des jalons clés à respecter pour chaque phase de développement.
+Les réunions avec le client ne sont pas nécessaires mais un suivi est préferé par le client tout les 6 jours.
+
+## Fonctionnalités Minimum (MVP)
+- [ ] Le ping doit fonctionner pour au moins un DNS.
+- [ ] ROUGE si deconnecté, JAUNE si inconnu. 
+
+## Budget
+Le budget sera défini dans un devis séparé en fonction des coûts de développement et de test
+
+## Timeline
+| Semaine       | Informations |
+| ------------- | ------------- |
+| S1  | Création du cahier des charges|
+| S2  | Initialisation + finalisation du MVP#01  |
+| S3  | Création du projet final + couleurs |
+| S4  | Fin du projet + Test unitaires  |
