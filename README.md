@@ -59,9 +59,12 @@ Scanner les noms de domaines a une fréquence adaptée de sorte à avoir le temp
 ## Contraintes Techniques / Légales
 
 Certains services externes peuvent réagir si un nombre de pings sont trop récurents sur un temps donné, et peut donc corrompre les données récoltées.<br>
+<br>
 Il faut donc configurer les pings en fonctions des règles du service. <br>
+<br>
 C'est pour cela que l'on propose le paramètre ``period`` dans le fichier json,<br>
 afin de définir tout les combiens de temps il faudra lancer un scan pour un domain donnée !<br>
+<br>
 ``🛑 INFO: Si period n'est pas défini dans le JSON, il prendra alors une valeur par défaut définie dans le code principale``<br>
 
 ## Méthodologie et Planning
