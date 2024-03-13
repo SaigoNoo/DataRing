@@ -75,19 +75,35 @@ def read_json(file):
   with open(file=file, mode='r', enconding='utf8') as dns_list:
     return load(dns_list)
 
-def write(file, content):
+def write(file, name: str, enable: bool, dns: str, priority: int=1):
+content = read_json(file=file)[name] = {
+    "enable": enable,
+    "dns": dns,
+    "priority": priority
+}
     with open(file=file, mode='w', encoding='utf8') as dns_list:
         file.write(dumps(content, indent=2))
 
 datas_json = read_json(file='dns.json')
-datas_json["Google BE"] = {
-    "enable": true,
-    "dns": "google.be",
-    "priority": 2
-}
-write(file='dns.json', content=datas_json)
+write(file='dns.json', name='GOOGLE BE', enable=True, dns='google.be')
 ```
+> ⚠️ Par ce moyen (comme pour l'autre en manuel), la modification pourra être faite à chaud. ⚠️
 
+### Gestion des inputs
+
+Il n'y a aucun input attendu dans le programme, a part les appels avec arguments. Ce logiciel de base, ne se contente que de traiter des instructions, et toutes entrée (signal, clavier, souris) executant du code ASCII ne devra en rien interferer avec le script. Les seules commandes attendues sont les suivantes:
+```bash
+python3 main.py
+```
+```bash
+python3 setup.py --add --name="GOOGLE BE --dns="google.be" --enable=True --priority=1
+```
+```bash
+python3 setup.py --del --name="GOOGLE BE"
+```
+```bash
+python3 setup.py --edit --name="GOOGLE BE" --enable=False
+```
 
 ## Contraintes Techniques / Légales
 
