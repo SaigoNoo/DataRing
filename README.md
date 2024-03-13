@@ -56,6 +56,9 @@ Scanner les noms de domaines a une fréquence adaptée de sorte à avoir le temp
 - par niveau de priorité (0 => Plus haute priorité à chiffre positif infini)
 <br>
 
+> ⚠️ Ce qu'on entend par priorité représente quelle nom de domaine sera scané en priorité, et quelles actions seront définies en fonctionne d'un comportement quelconque, comme une notification etc... ⚠️
+
+
 ### Gestion des noms de domaines cibles | Manuel
 
 La méthode, peut-être la plus barbare, elle consiste à éditer un fichier JSON et d'y insérer un sous-dictionnaire sans passer par le logiciel en lui-même.
@@ -130,7 +133,8 @@ Un format proposé serait de la structure suivante:
 ```
 > ⚠️ Eviter de stocker les scans toutes les 1 minutes, mais toutes les 5 minutes, sinon le fichier JSON pourra vite devenir très lourd.  ⚠️
 
-On pourra ainsi, créer des méthodes ou fonctiones capables de traiter rapidement 
+On pourra ainsi, créer des méthodes ou fonctiones capables de traiter rapidement les données a partir d'une date, un mois, et filtrer sur ceux qui étaient disponible ou non...
+A partir de ces données, et grace a la structure JSON (dictionnaire), on pourra générer des graphiques sur base des données obtenues.
 
 
 ## Contraintes Techniques / Légales
