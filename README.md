@@ -136,6 +136,19 @@ Un format proposé serait de la structure suivante:
 On pourra ainsi, créer des méthodes ou fonctiones capables de traiter rapidement les données a partir d'une date, un mois, et filtrer sur ceux qui étaient disponible ou non...
 A partir de ces données, et grace a la structure JSON (dictionnaire), on pourra générer des graphiques sur base des données obtenues.
 
+### Utilitaire administratifs et de prévention des soucis techniques
+
+Ce script incorporera une large gamme de systèmes de notification tels que:
+- Notification e-mail (SMTP)
+- Notification discord (via bot ou par webhook)
+- Notification Telegram
+- Optionnel: Notification vers logiciel client (notification OS)
+
+### Description des priorités:
+| Numéro de priorité | Description |
+|--------------------|-------------|
+| 1 | Niveau absolu, si aucune réponse n'est renvoyé au script, envoyer une notification aux administrateurs |
+|---|--------------------------------------------------------------------------------------------------------|
 
 ## Contraintes Techniques / Légales
 
