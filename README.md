@@ -105,6 +105,24 @@ python3 setup.py --del --name="GOOGLE BE"
 python3 setup.py --edit --name="GOOGLE BE" --enable=False
 ```
 
+### Rapports, historiques...
+Le logiciel devra être capable de mémoriser chaque itération d'analyse, c'est à dire, l'heure du scan et le résultat du domaine scané. 
+Un format proposé serait de la structure suivante:
+```json
+"2024: {
+  "mars": {
+    "13": {
+      "11:58: {
+        "GOOGLE BE: {
+          "reachable": true,
+          "latence": 15,
+        }
+      }
+    }
+  }
+}
+```
+
 ## Contraintes Techniques / Légales
 
 Certains services externes peuvent réagir si un nombre de pings sont trop récurents sur un temps donné, et peut donc corrompre les données récoltées.<br>
