@@ -69,6 +69,8 @@ Il suffirait d'executer ``setup.py --add`` indépendamment du script ``main.py``
 __Exemple basique de code pour lire le fichier et y écrire:__
 ```py
 from json import load, dump
+
+
 def read_json(file):
   with open(file=file, mode='r', enconding='utf8') as dns_list:
     return load(dns_list)
