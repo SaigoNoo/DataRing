@@ -1,8 +1,4 @@
-# A l'attention des utilisateurs GitHub
-Sachez que ce projet n'est nullement professionnel, mais simplement un travail d'études où je dois jouer le role de développeur avec le client.
-
-# Rédaction du cahier des charges
-Par *[Doussis Giorgios](https://github.com/SaigoNoo)*
+# DataRing
 
 ## Présentation Client
 Le clients sont des responsables IT de l'EPHEC (École pratique des hautes études commerciales). Ils sont spécialisés en Administration des systèmes et réseaux.<br>
@@ -183,3 +179,7 @@ Le travail étant achevé, ce dernier est estimé à 150 € pour une licence en
 | S2  | Initialisation + finalisation du MVP#01  |
 | S3  | Création du projet final + couleurs |
 | S4  | Fin du projet + Test unitaires  |
+
+
+> Ce repository ne contient aucun script avancé comme précisé dans ce cahier de charge. Le but de ce cahier de charge esr de démonter a mes enseignants ma capacité à rédiger un cahier de charge pour mon cursus scolaire. 
+Par *[Doussis Giorgios](https://github.com/SaigoNoo)*
