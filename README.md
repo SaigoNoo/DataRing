@@ -56,6 +56,37 @@ Scanner les noms de domaines a une fréquence adaptée de sorte à avoir le temp
 - par niveau de priorité (0 => Plus haute priorité à chiffre positif infini)
 <br>
 
+### Gestion des noms de domaines cibles | Manuel
+
+La méthode, peut-être la plus barbare, elle consiste à éditer un fichier JSON et d'y insérer un sous-dictionnaire sans passer par le logiciel en lui-même.
+Il s'agirait de passer par un éditeur de texte (GUI ou non), et de l'éditer à chaud, le programme, actualise sa liste de noms de domaines a chaque itération de lecture.
+
+### Gestion des noms de domaines cibles | Programme
+
+La méthode la plus simple pour ajouter un DNS cible serait d'employer l'argument ``--àdd`` avec le second script.
+Il suffirait d'executer ``setup.py --add`` indépendamment du script ``main.py`` pour y procèder.
+
+__Exemple basique de code pour lire le fichier et y écrire:__
+```py
+from json import load, dump
+def read_json(file):
+  with open(file=file, mode='r', enconding='utf8') as dns_list:
+    return load(dns_list)
+
+def write(file, content):
+    with open(file=file, mode='w', encoding='utf8') as dns_list:
+        file.write(dumps(content, indent=2))
+
+datas_json = read_json(file='dns.json')
+datas_json["Google BE"] = {
+    "enable": true,
+    "dns": "google.be",
+    "priority": 2
+}
+write(file='dns.json', content=datas_json)
+```
+
+
 ## Contraintes Techniques / Légales
 
 Certains services externes peuvent réagir si un nombre de pings sont trop récurents sur un temps donné, et peut donc corrompre les données récoltées.<br>
