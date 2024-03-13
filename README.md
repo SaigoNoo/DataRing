@@ -148,7 +148,9 @@ Ce script incorporera une large gamme de systèmes de notification tels que:
 | Numéro de priorité | Description |
 |--------------------|-------------|
 | 1 | Niveau absolu, si aucune réponse n'est renvoyé au script, envoyer une notification aux administrateurs |
-|---|--------------------------------------------------------------------------------------------------------|
+| 2 | Niveau intermediaire, l'erreur est logguée dans le système de gestion des erreurs internes, mais les admins n'en sont pas notifiés |
+| 3 | Niveau minimum, l'erreur est juste ignorée, et aucune notification n'est envoyée |
+| 4 | EXCEPTION, le résultat du scan, quel qu'il soit est notifié aux administrateurs |
 
 ## Contraintes Techniques / Légales
 
