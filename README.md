@@ -109,19 +109,29 @@ python3 setup.py --edit --name="GOOGLE BE" --enable=False
 Le logiciel devra être capable de mémoriser chaque itération d'analyse, c'est à dire, l'heure du scan et le résultat du domaine scané. 
 Un format proposé serait de la structure suivante:
 ```json
-"2024: {
-  "mars": {
-    "13": {
-      "11:58: {
-        "GOOGLE BE: {
-          "reachable": true,
-          "latence": 15,
+"scans: {
+  "GOOGLE BE": {
+    "2024": {
+      "mars": {
+        "13": {
+          "12:41": {
+            "reachable": true,
+            "latence": 15
+          }
+          "12:46": {
+            "reachable": true,
+            "latence": 12
+          }
         }
       }
     }
   }
 }
 ```
+> ⚠️ Eviter de stocker les scans toutes les 1 minutes, mais toutes les 5 minutes, sinon le fichier JSON pourra vite devenir très lourd.  ⚠️
+
+On pourra ainsi, créer des méthodes ou fonctiones capables de traiter rapidement 
+
 
 ## Contraintes Techniques / Légales
 
