@@ -76,9 +76,9 @@ Il suffirait d'executer ``setup.py --add`` indépendamment du script ``main.py``
 
 Il est également possible de gérer le script à l'aide de l'API mise en place !</b>
 Voici les requêtes possibles:
-- http://192.168.0.4:8888/add?tag="AMAZON FR"&enable=0&dns=www.amazon.fr&period=4&priority=1
-- http://192.168.0.4:8888/delete?tag="AMAZON FR"
-- http://192.168.0.4:8888/update?tag="AMAZON FR"&enable=1&dns=www.amazon.fr&period=20&priority=1
+- http://<ip>:<port>/add?tag="AMAZON FR"&enable=0&dns=www.amazon.fr&period=4&priority=1
+- http://<ip>:<port>/delete?tag="AMAZON FR"
+- http://<ip>:<port>/update?tag="AMAZON FR"&enable=1&dns=www.amazon.fr&period=20&priority=1
 
 > API mise en place avec FastAPI, il est donc nécessaire que votre infrastructure possède Uvicorn.
 
