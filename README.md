@@ -11,6 +11,14 @@ Il est demandé de réaliser l'utilitaire en **Python** est en **ligne de comman
 La configuration doit être simple et modifiable avec un fichier, à chaud (fichier JSON contenant les domaines)<br>
 
 ## Exemple de fichier JSON attendu
+> La configuration attendue par le script suivant doit répondre à la structure suivante, dans le format normalisé JSON. La clé root est au choix, considerez que c'est un tag, ou une étiquette pour identifier la configuration.
+
+**__Paramètres attendus:__**
+- enable: \[type: bool\] > Est-ce que ce nom de domaine doit être ignoré à l'analyse ou pas ?
+- dns: \[type: str\] > nom de domaine ou IP a interroger
+- priority: \[type: int\] > Le chiffre correspond a comment doit se comporter le script en fonction du résulatat attendu: [voir ici](#description-des-priorit%C3%A9s)
+- period: \[type: int\] > Tout les combien de secondes doit être analysé le domaine ?
+
 ```json
 {
   "EPHEC": {
@@ -22,12 +30,14 @@ La configuration doit être simple et modifiable avec un fichier, à chaud (fich
   "PLEX - Bad DNS": {
     "enable": true,
     "dns": "plxe.dosis.eb",
-    "priority": 1
+    "priority": 1,
+    "period": 10
   },
   "PLEX - Good DNS": {
     "enable": true,
     "dns": "plex.doussis.be",
-    "priority": 2
+    "priority": 2,
+    "period": 4
   }
 }
 ```
@@ -36,6 +46,7 @@ La configuration doit être simple et modifiable avec un fichier, à chaud (fich
 Avoir un suivi en temps réel de l'état des services, d'un simple coup d'oeil avec une intervale personnalisable en secondes.<br>
 L'objectif est de pouvoir permettre aux responsables de l'IT d'interagir<br>
 en conséquence lors d'une éventuelle panne système et de pouvoir éventuellement prévenir leurs utilisateurs sur l'indisponibilité d'un de leurs services.<br>
+Et à l'aide de l'API mise en place, il sera possible de développer un script pour executer telle ou telle action en fonction d'un résultat obtenu par DataRing.
 
 ## Besoins fonctionnels
 
@@ -49,11 +60,8 @@ Pouvoir éventuellement stocker les données à chaque interval pour avoir une s
 Scanner les noms de domaines a une fréquence adaptée de sorte à avoir le temps de lire les informations à l'écran et pouvoir trier les données par:
 - fqdn (dns)
 - par status (connectés / déconnectés)
-- par niveau de priorité (0 => Plus haute priorité à chiffre positif infini)
+- par niveau de priorité
 <br>
-
-> ⚠️ Ce qu'on entend par priorité représente quelle nom de domaine sera scané en priorité, et quelles actions seront définies en fonctionne d'un comportement quelconque, comme une notification etc... ⚠️
-
 
 ### Gestion des noms de domaines cibles | Manuel
 
@@ -65,43 +73,32 @@ Il s'agirait de passer par un éditeur de texte (GUI ou non), et de l'éditer à
 La méthode la plus simple pour ajouter un DNS cible serait d'employer l'argument ``--àdd`` avec le second script.
 Il suffirait d'executer ``setup.py --add`` indépendamment du script ``main.py`` pour y procèder.
 
-__Exemple basique de code pour lire le fichier et y écrire:__
-```py
-from json import load, dump
+### Gestion des noms de domaines cibles | API
 
+Il est également possible de gérer le script à l'aide de l'API mise en place !</b>
+Voici les requêtes possibles:
+- http://192.168.0.4:8888/add?tag="AMAZON FR"&enable=0&dns=www.amazon.fr&period=4&priority=1
+- http://192.168.0.4:8888/delete?tag="AMAZON FR"
+- http://192.168.0.4:8888/update?tag="AMAZON FR"&enable=1&dns=www.amazon.fr&period=20&priority=1
 
-def read_json(file):
-  with open(file=file, mode='r', enconding='utf8') as dns_list:
-    return load(dns_list)
-
-def write(file, name: str, enable: bool, dns: str, priority: int=1):
-content = read_json(file=file)[name] = {
-    "enable": enable,
-    "dns": dns,
-    "priority": priority
-}
-    with open(file=file, mode='w', encoding='utf8') as dns_list:
-        file.write(dumps(content, indent=2))
-
-datas_json = read_json(file='dns.json')
-write(file='dns.json', name='GOOGLE BE', enable=True, dns='google.be')
-```
-> ⚠️ Par ce moyen (comme pour l'autre en manuel), la modification pourra être faite à chaud. ⚠️
+> API mise en place avec FastAPI, il est donc nécessaire que votre infrastructure possède Uvicorn.
 
 ### Gestion des inputs
 
-Il n'y a aucun input attendu dans le programme, a part les appels avec arguments. Ce logiciel de base, ne se contente que de traiter des instructions, et toutes entrée (signal, clavier, souris) executant du code ASCII ne devra en rien interferer avec le script. Les seules commandes attendues sont les suivantes:
+Il n'y a aucun input attendu dans le programme, a part les appels avec arguments.</b>
+Ce logiciel de base, ne se contente que de traiter des instructions, et toutes entrée (signal, clavier, souris) executant du code ASCII ne devra en rien interferer avec le script.</b>
+Les seules commandes attendues sont les suivantes:
 ```bash
 python3 main.py
 ```
 ```bash
-python3 setup.py --add --name="GOOGLE BE --dns="google.be" --enable=True --priority=1
+python3 setup.py --add --name="GOOGLE BE --dns="google.be" --enable=True --priority=1 --perdiod=15
 ```
 ```bash
-python3 setup.py --del --name="GOOGLE BE"
+python3 setup.py --delete --name="GOOGLE BE"
 ```
 ```bash
-python3 setup.py --edit --name="GOOGLE BE" --enable=False
+python3 setup.py --update --name="GOOGLE BE" --enable=False
 ```
 
 ### Rapports, historiques...
@@ -118,8 +115,9 @@ Un format proposé serait de la structure suivante:
             "latence": 15
           }
           "12:46": {
-            "reachable": true,
-            "latence": 12
+            "reachable": false,
+            "latence": 999,
+            "reason": "DNS NOT EXIST"
           }
         }
       }
@@ -127,7 +125,7 @@ Un format proposé serait de la structure suivante:
   }
 }
 ```
-> ⚠️ Eviter de stocker les scans toutes les 1 minutes, mais toutes les 5 minutes, sinon le fichier JSON pourra vite devenir très lourd.  ⚠️
+> ⚠️ Evitez de stocker les scans toutes les 1 minutes, mais toutes les 5 minutes, sinon le fichier JSON pourrais vite devenir très lourd.  ⚠️
 
 On pourra ainsi, créer des méthodes ou fonctiones capables de traiter rapidement les données a partir d'une date, un mois, et filtrer sur ceux qui étaient disponible ou non...
 A partir de ces données, et grace a la structure JSON (dictionnaire), on pourra générer des graphiques sur base des données obtenues.
@@ -167,10 +165,11 @@ Les réunions avec le client ne sont pas nécessaires mais un suivi est préfer�
 - [x] Le ping doit fonctionner pour au moins un DNS.
 - [x] ROUGE si deconnecté, JAUNE si inconnu.
 - [x] Trier par défaut par ordre alphabétique
+- [x] La requête API /list_config doit pouvoir renvoyer la configuration au navigateur
 
 ## Budget
 ~~Le budget sera défini dans un devis séparé en fonction des coûts de développement et de test~~
-Le travail étant achevé, ce dernier est estimé à 150 € pour une licence entreprise.
+Le travail étant achevé, ce dernier est estimé à 200 € pour une licence entreprise.
 
 ## Timeline
 | Semaine       | Informations |
