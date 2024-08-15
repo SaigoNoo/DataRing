@@ -16,7 +16,7 @@ La configuration doit être simple et modifiable avec un fichier, à chaud (fich
 **__Paramètres attendus:__**
 - enable: \[type: bool\] > Est-ce que ce nom de domaine doit être ignoré à l'analyse ou pas ?
 - dns: \[type: str\] > nom de domaine ou IP a interroger
-- priority: \[type: int\] > Le chiffre correspond a comment doit se comporter le script en fonction du résulatat attendu: [voir ici](#description-des-priorit%C3%A9s)
+- priority: \[type: int\] > Le chiffre correspond a comment doit se comporter le script en fonction du résultat attendu: [voir ici](#description-des-priorit%C3%A9s)
 - period: \[type: int\] > Tout les combien de secondes doit être analysé le domaine ?
 
 ```json
