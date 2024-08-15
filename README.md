@@ -44,8 +44,7 @@ La configuration doit être simple et modifiable avec un fichier, à chaud (fich
 
 ## Objectif
 Avoir un suivi en temps réel de l'état des services, d'un simple coup d'oeil avec une intervale personnalisable en secondes.<br>
-L'objectif est de pouvoir permettre aux responsables de l'IT d'interagir<br>
-en conséquence lors d'une éventuelle panne système et de pouvoir éventuellement prévenir leurs utilisateurs sur l'indisponibilité d'un de leurs services.<br>
+L'objectif est de pouvoir permettre aux responsables de l'IT d'interagir en conséquence lors d'une éventuelle panne système et de pouvoir éventuellement prévenir leurs utilisateurs sur l'indisponibilité d'un de leurs services.<br>
 Et à l'aide de l'API mise en place, il sera possible de développer un script pour executer telle ou telle action en fonction d'un résultat obtenu par DataRing.
 
 ## Besoins fonctionnels
