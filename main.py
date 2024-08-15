@@ -1,31 +1,59 @@
 from json import load
 from pythonping import ping
-
-dns_queries = None
-
-
-def load_dns(querie):
-    for dns in querie:
-        if querie[dns]['enable']:
-            output(dns, querie[dns]['dns'], dns_response(querie[dns]['dns']))
+from fastapi import FastAPI
+from time import sleep
+from asyncio import run, sleep
 
 
-def dns_response(dns_value):
-    try:
-        return [ping(target=dns_value, verbose=False, timeout=2).success(), 1]
-    except:
-        return [False, 0]
+class Printer:
+    async def counter_when_zero(self, configuration: dict, class_instance):
+        print(type(class_instance))
+        await sleep(int(configuration["period"]))
+        return
 
 
-def output(label, dns, success):
-    if success[1] == 0:
-        response = 'UNKNOWN DNS'
-    elif success[1] == 1:
-        response = 'NO ANSWER'
-    print(f'{label}:\n - DNS: {dns}\n - Response: {"OK" if success[0] else f"UNREACHABLE ({response})"}\n')
+class DataRingRequest:
+    def __init__(self):
+        def read_config():
+            with open('ressources/dns.json', 'r') as dns:
+                return load(dns)
+
+        self.dns = read_config()
+
+    def test_dns(self):
+        for dns in self.dns:
+            if self.dns[dns]["enable"]:
+                return self.dns_response(self.dns[dns]["dns"])
+
+    def dns_response(self, dns_value: str):
+        try:
+            return [ping(target=dns_value, verbose=False, timeout=2).success(), 1]
+        except:
+            return [False, 0]
 
 
-with open('ressources/dns.json', 'r') as dns:
-    dns_queries = load(dns)
+# Déclarations
+dataring = DataRingRequest()
+app = FastAPI(
+    description="API integrée à DataRing"
+)
 
-load_dns(dns_queries)
+
+# Déclarations des request
+@app.get("/add")
+async def add(tag: str, enable: int, dns: str, priority: int, period: int):
+    return "Ajouté"
+
+
+@app.get("/delete")
+async def delete(tag: str):
+    return "Supprimé"
+
+
+@app.get("/update")
+async def update(tag: str, enable: int, dns: str, priority: int, period: int):
+    return "Mis à jour"
+
+
+while True:
+    print(dataring.test_dns())
