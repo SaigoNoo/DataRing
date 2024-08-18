@@ -75,7 +75,7 @@ class Config:
 
 class Notification:
     def __init__(self):
-        self.discord = "<set_your_url_here>"
+        self.discord = "https://discord.com/api/webhooks/1150119172097986691/6iSgNysP6bFfjiS7QjE9UuthUjlqthg0XLFZ0YqHPf7t2kApjbCJZ0sr64tsIuDo9KhU"
 
     def send_discord_notif(self, label: str, data: dict):
         webhook = DiscordWebhook(url=self.discord, username="DataRing | Notifier")
@@ -96,7 +96,8 @@ class Notification:
         embed.add_embed_field(name="Priority", value=str(data["priority"]))
         embed.add_embed_field(name="Period", value=str(data["period"]))
         webhook.add_embed(embed=embed)
-        webhook.execute()
+        send = webhook.execute()
+        return send.status_code
 
 
 class Errors:
@@ -185,7 +186,7 @@ async def delete(tag: str):
     if c.tag_exist(label=tag):
         c.delete_entry(label=tag)
         c.save_config()
-        return "Deleted"
+        return 'Deleted'
     else:
         return f"Label {tag} doesn't exist!"
 
@@ -254,6 +255,7 @@ async def check_dns():
     while True:
         tasks = []
         for dns in dataring.dns:
+            print(cli.counter_when_zero(label=dns, dns=dataring.dns[dns]))
             task = create_task(cli.counter_when_zero(label=dns, dns=dataring.dns[dns]))
             task.add_done_callback(lambda t: format_preview(result=t.result()))
             tasks.append(task)
