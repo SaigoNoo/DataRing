@@ -1,0 +1,5 @@
+pythonping
+fastapi
+rich
+uvicorn
+discord-webhook

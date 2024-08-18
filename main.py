@@ -1,11 +1,13 @@
 from json import load, dumps
 from pythonping import ping
 from fastapi import FastAPI
-from asyncio import create_task, sleep
+from fastapi.responses import RedirectResponse
+from asyncio import create_task, sleep, gather
 from rich.console import Console
 from rich.panel import Panel
 from uvicorn import run as runuvi
-from requests import get
+from discord_webhook import DiscordWebhook, DiscordEmbed
+from datetime import datetime
 
 
 class CLI:
@@ -24,18 +26,27 @@ class DataRingRequest:
             self.dns = load(dns)
 
     def test_dns(self, label: str, dns: dict):
+        self.update_config()
         if dns["enable"]:
-            return self.dns_response(label=label, dns=dns["dns"])
-
-    def dns_response(self, label: str, dns: str):
-        try:
-            response = ping(target=dns, verbose=False, timeout=2)
-            if not response.success():
-                return [label, dns, response.success(), "DNS_EXIST_BUT_NO_MS"]
-            else:
-                return [label, dns, response.success(), response.rtt_avg_ms]
-        except:
-            return [label, dns, False]
+            try:
+                response = ping(target=dns["dns"], verbose=False, timeout=2)
+                return {
+                    "label": label,
+                    "dns": dns["dns"],
+                    "dns_exist": response.success() and response.stats_packets_sent == 4,
+                    "dns_reachable": response.success(),
+                    "ms": response.rtt_avg_ms,
+                    "priority": dns["priority"],
+                    "period": dns["period"]
+                }
+            except:
+                return {
+                    "label": label,
+                    "dns": dns["dns"],
+                    "dns_reachable": False,
+                    "priority": dns["priority"],
+                    "period": dns["period"]
+                }
 
 
 class Config:
@@ -64,14 +75,83 @@ class Config:
 
 class Notification:
     def __init__(self):
-        self.discord = "https://discord.com/api/webhooks/1150119172097986691/6iSgNysP6bFfjiS7QjE9UuthUjlqthg0XLFZ0YqHPf7t2kApjbCJZ0sr64tsIuDo9KhU"
+        self.discord = "<set_your_url_here>"
 
-    def check_discord_exist(self):
-        r = get(url=self.discord).json()
-        return "application_id" in r and "avatar" in r and "channel_id" in r and "guild_id" in r
+    def send_discord_notif(self, label: str, data: dict):
+        webhook = DiscordWebhook(url=self.discord, username="DataRing | Notifier")
+        embed = DiscordEmbed(
+            title=f"Alerte de connexion pour {label}",
+            color=16711680,
+            description="Une erreur de connexion à été reportée"
+        )
+        embed.set_author(name="DataRing")
+        embed.set_footer(text="Ceci est un message géneré par DataRing")
+        embed.add_embed_field(name="DBS or IP", value=data["dns"])
+        if "dns_reachable" in data:
+            embed.add_embed_field(name="DNS Reachable", value=data["dns_reachable"])
+        if "dns_exist" in data:
+            embed.add_embed_field(name="DNS Exist", value=data["dns_exist"])
+        if "ms" in data:
+            embed.add_embed_field(name="Timeout", value=str(data["ms"]))
+        embed.add_embed_field(name="Priority", value=str(data["priority"]))
+        embed.add_embed_field(name="Period", value=str(data["period"]))
+        webhook.add_embed(embed=embed)
+        webhook.execute()
 
-    def send_discord_notif(self, data: dict):
-        pass
+
+class Errors:
+    def __init__(self):
+        self.errors = []
+
+    def add(self, label: str):
+        self.errors.append(label)
+
+    def rem(self, label: str):
+        index = self.errors.index(label)
+        del self.errors[index]
+
+
+class Logs:
+    def __init__(self):
+        self.file = "ressources/log.json"
+
+    def add(self, label: str, result: dict):
+        def key_exist_in(key: str, dict: dict):
+            return key in dict
+
+        with open(file="ressources/log.json", mode="r", encoding="utf-8") as log:
+            data = load(log)
+        now = datetime.now()
+        year = str(now.strftime("%Y"))
+        month = str(now.strftime("%m"))
+        day = str(now.strftime("%d"))
+        hour = str(now.strftime("%H"))
+        minute = str(now.strftime("%M"))
+        seconds = str(now.strftime("%S"))
+        if not key_exist_in(key=year, dict=data):
+            data[year] = {}
+        if not key_exist_in(key=month, dict=data[year]):
+            data[year][month] = {}
+        if not key_exist_in(key=day, dict=data[year][month]):
+            data[year][month][day] = {}
+        if not key_exist_in(key=hour, dict=data[year][month][day]):
+            data[year][month][day][hour] = {}
+        if not key_exist_in(key=minute, dict=data[year][month][day][hour]):
+            data[year][month][day][hour][minute] = {}
+        if not key_exist_in(key=seconds, dict=data[year][month][day][hour][minute]):
+            data[year][month][day][hour][minute][seconds] = {}
+        data[year][month][day][hour][minute][seconds] = {
+            "label": label,
+            "dns": result["dns"],
+            "priority": result["priority"],
+            "period": result["period"]
+        }
+        if "dns_reachable" in result:
+            data[year][month][day][hour][minute][seconds]["dns_exist"] = result["dns_exist"]
+            data[year][month][day][hour][minute][seconds]["dns_reachable"] = result["dns_reachable"]
+            data[year][month][day][hour][minute][seconds]["ms"] = result["ms"]
+        with open(file="ressources/log.json", mode="w", encoding="utf-8") as log:
+            log.write(dumps(data, indent=2))
 
 
 # Declarations
@@ -83,6 +163,11 @@ cli = CLI()
 
 
 # Déclarations des requêtes
+@app.get("/")
+async def root():
+    return RedirectResponse(url="/docs")
+
+
 @app.get("/add")
 async def add(tag: str, enable: int, dns: str, priority: int, period: int):
     if 0 < priority < 5:
@@ -120,24 +205,48 @@ async def update(tag: str, enable: int, dns: str, priority: int, period: int):
 
 
 async def check_dns():
-    def format_preview(result: list):
-        label = result[0]
-        dns = result[1]
-        dns_exist = result[2]
-        reachable = result[2]
-        for element in result:
-            if str(element).startswith("DNS_EXIST_BUT"):
-                dns_exist = True
-        ms = result[3] if result[2] else None
-        priority = Config().dns[label]["priority"]
-        period = Config().dns[label]["period"]
-        notified = "Notification sended" if priority == 1 or priority == 4 and not reachable else "Nothhing to do..."
-        Console(
-            record=True
-        ).print(
+    def format_preview(result: dict):
+        # Si Priorité 1 et que DNS ne réponds pas et n'est pas indexé comme ERREUR -> Ajouter + Envoyer
+        if result["priority"] == 1 and not result["dns_reachable"] and not result["label"] in e.errors:
+            e.add(label=result["label"])
+            n.send_discord_notif(label=result["label"], data=result)
+            notified = "Notification sent !"
+
+        elif result["priority"] == 4 and not result["label"] in e.errors:
+            e.add(label=result["label"])
+            n.send_discord_notif(label=result["label"], data=result)
+            notified = "Notification sent !"
+
+        # Si DNS répond et indexé comme erreur, le supprimer des erreurs et qu'il n'a pas la priorité 4
+        elif result["dns_reachable"] and result["label"] in e.errors and result["priority"] != 4:
+            e.rem(label=result["label"])
+            notified = "Resolved !"
+
+        # Si DNS ne répond pas et est toujours indexé comme ERREUR - > Juste message
+        elif not result["dns_reachable"] and result["label"] in e.errors:
+            notified = "Already not resolved"
+
+        elif result["dns_reachable"] and result["priority"] == 2:
+            l.add(label=result["label"], result=result)
+            notified = "Error logged !"
+
+        else:
+            notified = "Nothing more to do..."
+
+        text = ""
+        text += f"- DNS: {result['dns']}\n"
+        if "dns_exist" in result:
+            text += f"- DNS EXIST: {result['dns_exist']}\n"
+        text += f"- DNS REACHABLE: {result['dns_reachable']}\n"
+        if "ms" in result:
+            text += f"- MS: {result['ms']}\n"
+        text += f"- Priority: {result['priority']}\n"
+        text += f"- Period: {result['period']}\n\n"
+        text += f"{notified}"
+        Console(record=True).print(
             Panel.fit(
-                f"- DNS: {dns}\n- DNS EXIST: {dns_exist}\n- DNS REACHABLE: {reachable}\n- MS: {ms}\n- Priority: {priority}\n- Period: {period}\n\n{notified}",
-                title=label,
+                renderable=text,
+                title=result["label"],
                 width=60
             )
         )
@@ -149,13 +258,14 @@ async def check_dns():
             task.add_done_callback(lambda t: format_preview(result=t.result()))
             tasks.append(task)
 
-        await sleep(0)
-        await sleep(max(int(d["period"]) for d in dataring.dns.values()))
+        results = await gather(*tasks)
+
+        for result in results:
+            format_preview(result)
 
         dataring.update_config()
 
 
-# Lancement de la tâche de fond au démarrage de l'application
 @app.on_event("startup")
 async def startup_event():
     create_task(check_dns())
@@ -165,6 +275,6 @@ async def startup_event():
 if __name__ == "__main__":
     # Tester les services Notif
     n = Notification()
-    if not n.check_discord_exist():
-        raise ConnectionError("Discord Webhook isn't correctly configured !")
+    e = Errors()
+    l = Logs()
     runuvi(app, host="127.0.0.1", port=8000)

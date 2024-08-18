@@ -2,7 +2,7 @@
   "EPHEC": {
     "enable": true,
     "dns": "www.ephec.be",
-    "priority": 4,
+    "priority": 2,
     "period": 2
   },
   "PLEX - Good DNS": {
