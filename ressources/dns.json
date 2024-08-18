@@ -2,19 +2,13 @@
   "EPHEC": {
     "enable": true,
     "dns": "www.ephec.be",
-    "priority": 0,
-    "period": 5
-  },
-  "PLEX - Bad DNS": {
-    "enable": true,
-    "dns": "plxe.dosis.eb",
-    "priority": 1,
-    "period": 5
+    "priority": 4,
+    "period": 2
   },
   "PLEX - Good DNS": {
     "enable": true,
-    "dns": "plex.doussis.be",
-    "priority": 2,
+    "dns": "myplex.doussis.be",
+    "priority": 1,
     "period": 5
   }
 }
